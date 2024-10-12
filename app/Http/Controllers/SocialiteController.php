@@ -41,12 +41,12 @@ class SocialiteController extends Controller
 
                 Auth::login($user);
             }
+            return redirect()->away('http://localhost:3000');
+            // // 創建 API Token
+            // $token = $user->createToken('API Token')->plainTextToken;
 
-            // 創建 API Token
-            $token = $user->createToken('API Token')->plainTextToken;
-
-            // 重定向到前端應用，並攜帶 token
-            return redirect()->away('http://localhost:3000/login/callback?token=' . $token);
+            // // 重定向到前端應用，並攜帶 token
+            // return redirect()->away('http://localhost:3000/login/callback?token=' . $token);
 
         } catch (Exception $e) {
             return redirect('/login');

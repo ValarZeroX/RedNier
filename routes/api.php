@@ -10,7 +10,9 @@ use App\Http\Controllers\UserController;
 // })->middleware('auth:sanctum');
 
 
+
 Route::middleware('auth:sanctum')->group( function () {
-    Route::post('/logout', [SocialiteController::class, 'logout']);
     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
+    Route::post('/logout', [SocialiteController::class, 'logout']);
+    
 });

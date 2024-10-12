@@ -15,7 +15,8 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'login/google', 'logout', 'sanctum/csrf-cookie', 'user'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    // 'paths' => ['api/*', 'login/google', 'logout', 'sanctum/csrf-cookie', 'user'],
     // 'paths' => ['*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => ['http://localhost:3000'],
