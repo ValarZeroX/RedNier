@@ -13,13 +13,13 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            // 'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
         $user = User::create([
-            'name' => $validatedData['name'],
+            'name' => "",
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
         ]);
@@ -68,21 +68,37 @@ class AuthController extends Controller
             $socialUser = Socialite::driver($provider)->user();
             
             $user = User::where('email', $socialUser->getEmail())->first();
-
+            \Log::info($socialUser->getId());
+            \Log::info($socialUser->getEmail());
+            \Log::info($socialUser->getName());
+            \Log::info($provider);
             if (!$user) {
-                $user = User::create([
-                    'name' => $socialUser->getName(),
-                    'email' => $socialUser->getEmail(),
-                    'password' => Hash::make(Str::random(16)),
-                    'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                ]);
+                if ($provider == 'google') {
+                    $user = User::create([
+                        'name' => $socialUser->getName(),
+                        'email' => $socialUser->getEmail(),
+                        'password' => Hash::make(Str::random(16)),
+                        'google_id' => $socialUser->getId(),    
+                    ]);
+                } else if ($provider == 'facebook') {
+                    $user = User::create([
+                        'name' => $socialUser->getName(),
+                        'email' => $socialUser->getEmail(),
+                        'password' => Hash::make(Str::random(16)),
+                        'facebook_id' => $socialUser->getId(),
+                    ]);
+                }
             } else {
                 // 如果用戶已存在，更新 provider 信息
-                $user->update([
-                    'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                ]);
+                if ($provider == 'google') {
+                    $user->update([
+                        'google_id' => $socialUser->getId(),
+                    ]);
+                } else if ($provider == 'facebook') {
+                    $user->update([ 
+                        'facebook_id' => $socialUser->getId(),
+                    ]);
+                }
             }
 
             Auth::login($user);

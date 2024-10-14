@@ -14,8 +14,8 @@ class AddProviderFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('provider')->nullable();
-            $table->string('provider_id')->nullable();
+            $table->string('google_id')->nullable();
+            $table->string('facebook_id')->nullable();
         });
     }
 
@@ -27,7 +27,7 @@ class AddProviderFieldsToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['provider', 'provider_id']);
+            $table->dropColumn(['google_id', 'facebook_id']);
         });
     }
 }
