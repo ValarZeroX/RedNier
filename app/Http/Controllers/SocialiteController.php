@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Http\Request;
 // use App\Http\Requests;
@@ -26,30 +28,24 @@ class SocialiteController extends Controller
             // 檢查用戶是否存在於數據庫
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if ($user) {
-                // 如果用戶存在，則登入
-                Auth::login($user);
-            } else {
-                // 否則創建新用戶並登入
+            if (!$user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
-                    // 這裡可以生成一個隨機密碼
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => Hash::make(Str::random(16)),  // 使用 Hash::make() 替代 bcrypt()
                 ]);
-
-                Auth::login($user);
             }
-            return redirect()->away('http://localhost:3000');
-            // // 創建 API Token
-            // $token = $user->createToken('API Token')->plainTextToken;
 
-            // // 重定向到前端應用，並攜帶 token
-            // return redirect()->away('http://localhost:3000/login/callback?token=' . $token);
+            Auth::login($user);
+            $token = $user->createToken('social-auth-token')->plainTextToken;
+
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl . '/auth/callback?token=' . $token);
 
         } catch (Exception $e) {
-            return redirect('/login');
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl . '/login?error=social_login_failed');
         }
     }
 
@@ -59,5 +55,37 @@ class SocialiteController extends Controller
         $request->user()->tokens()->delete();
 
         return response()->json(['message' => 'Logged out successfully'], 200);
+    }
+
+    public function redirectToProvider($provider)
+    {
+        return Socialite::driver($provider)->redirect();
+    }
+
+    public function handleProviderCallback($provider)
+    {
+        try {
+            $socialUser = Socialite::driver($provider)->stateless()->user();
+            $user = User::where('email', $socialUser->getEmail())->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'name' => $socialUser->getName(),
+                    'email' => $socialUser->getEmail(),
+                    $provider . '_id' => $socialUser->getId(),
+                    'password' => Hash::make(Str::random(24)),  // 使用 Hash::make() 替代 bcrypt()
+                ]);
+            }
+
+            Auth::login($user);
+            $token = $user->createToken('social-auth-token')->plainTextToken;
+
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl . '/auth/callback?token=' . $token);
+
+        } catch (\Exception $e) {
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl . '/login?error=social_login_failed');
+        }
     }
 }

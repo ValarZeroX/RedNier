@@ -9,26 +9,7 @@ Route::get('/', function () {
 });
 
 
-// OAuth
-// Route::get('auth/google', [SocialiteController::class, 'redirectToGoogle']);
-// Route::get('auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
+// 社交媒體登入
+// Route::get('/login/{provider}', [SocialiteController::class, 'redirectToProvider']);
+// Route::get('/login/{provider}/callback', [SocialiteController::class, 'handleProviderCallback']);
 
-// Google 登入
-Route::get('/login/google', [SocialiteController::class, 'redirectToGoogle']);
-
-// Google 登入的回呼
-Route::get('/login/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
-
-// 登出
-// Route::post('/logout', [SocialiteController::class, 'logout'])->middleware('auth:sanctum');
-
-// Route::middleware('auth:sanctum')->group( function () {
-//     Route::post('/logout', [SocialiteController::class, 'logout']);
-//     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
-// });
-
-// Route::group([
-//     'middleware' => ['auth:sanctum']
-// ], function () {
-//     Route::post('/logout', [SocialiteController::class, 'logout'])
-// })
