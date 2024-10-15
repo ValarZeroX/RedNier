@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -24,12 +25,16 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
+        event(new Registered($user));
+
+        // Auth::login($user);
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], 201);
     }
 
     public function login(Request $request)
@@ -41,6 +46,7 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
