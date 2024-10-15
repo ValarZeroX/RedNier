@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 // use App\Http\Requests\EmailVerificationRequest;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 
 // 公開路由
 Route::post('/register', [AuthController::class, 'register']);
@@ -15,7 +16,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // 受保護路由
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum', 'verified')->group(function () {
     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
     Route::get('/user/auth-methods', [AuthController::class, 'getUserAuthMethods']);
     // 其他需要認證的路由...
@@ -41,10 +42,14 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
 Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
+// 驗證郵件
 Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
     ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
     ->name('verification.verify');
-
+    
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+    ->middleware(['auth:sanctum', 'throttle:6,1'])
+    ->name('verification.send');
 
 // Route::get('/email/verify/{id}/{hash}', [EmailVerificationRequest::class, 'verify'])->middleware(['signed'])->name('verification.verify');
 
