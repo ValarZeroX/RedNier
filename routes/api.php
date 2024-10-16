@@ -11,8 +11,8 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 
 // 公開路由
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('locale');
+Route::post('/login', [AuthController::class, 'login'])->middleware('locale');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // 受保護路由

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\App;
 
 class AuthController extends Controller
 {
@@ -41,7 +42,7 @@ class AuthController extends Controller
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Invalid login details'
+                'message' => trans('auth.login.invalidCredentials')
             ], 401);
         }
 
@@ -105,6 +106,13 @@ class AuthController extends Controller
                         'facebook_id' => $socialUser->getId(),
                     ]);
                 }
+
+                // // 檢查對應的 provider 欄位是否為 null
+                // if ($provider == 'google' && is_null($user->google_id)) {
+                //     return redirect(env('FRONTEND_URL') . '/auth/error?reason=google_id_missing');
+                // } elseif ($provider == 'facebook' && is_null($user->facebook_id)) {
+                //     return redirect(env('FRONTEND_URL') . '/auth/error?reason=facebook_id_missing');
+                // }
             }
 
             Auth::login($user);
