@@ -16,7 +16,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('locale');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // 受保護路由
-Route::middleware('auth:sanctum', 'verified')->group(function () {
+Route::middleware('auth:sanctum', 'verified', 'locale')->group(function () {
     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
     Route::get('/user/auth-methods', [AuthController::class, 'getUserAuthMethods']);
     // 其他需要認證的路由...
@@ -44,7 +44,7 @@ Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderC
 
 // 驗證郵件
 Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
+    ->middleware(['auth:sanctum', 'signed', 'throttle:6,1', 'locale'])
     ->name('verification.verify');
     
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
