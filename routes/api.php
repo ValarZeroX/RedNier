@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\User\UserSettingController;
 
 // 公開路由
 Route::post('/register', [AuthController::class, 'register'])->middleware('locale');
@@ -19,6 +20,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum', 'verified', 'locale')->group(function () {
     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
     Route::get('/user/auth-methods', [AuthController::class, 'getUserAuthMethods']);
+    Route::post('/user/settings', [UserSettingController::class, 'updateUserSettings']);
     // 其他需要認證的路由...
 
     // // 重新發送驗證郵件
