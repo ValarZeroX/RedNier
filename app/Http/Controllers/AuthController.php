@@ -24,6 +24,7 @@ class AuthController extends Controller
             'name' => "",
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+            'role' => 'user',
         ]);
 
         event(new Registered($user));
@@ -86,6 +87,7 @@ class AuthController extends Controller
                         'email' => $socialUser->getEmail(),
                         'password' => Hash::make(Str::random(16)),
                         'google_id' => $socialUser->getId(),    
+                        'role' => 'user',
                     ]);
                 } else if ($provider == 'facebook') {
                     $user = User::create([
@@ -93,6 +95,7 @@ class AuthController extends Controller
                         'email' => $socialUser->getEmail(),
                         'password' => Hash::make(Str::random(16)),
                         'facebook_id' => $socialUser->getId(),
+                        'role' => 'user',
                     ]);
                 }
             } else {
