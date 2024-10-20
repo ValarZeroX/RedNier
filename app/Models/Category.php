@@ -18,4 +18,9 @@ class Category extends Model
     {
         return $this->hasMany(Community::class);
     }
+
+    public function subCategories()
+    {
+        return $this->hasMany(SubCategory::class);
+    }
 }

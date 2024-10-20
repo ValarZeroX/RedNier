@@ -10,11 +10,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\User\UserSettingController;
+use App\Http\Controllers\API\CategoryController;
 
 // 公開路由
 Route::post('/register', [AuthController::class, 'register'])->middleware('locale');
 Route::post('/login', [AuthController::class, 'login'])->middleware('locale');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+//分類選單
+Route::get('/categories', [CategoryController::class, 'index']);
+
 
 // 受保護路由
 Route::middleware('auth:sanctum', 'verified', 'locale')->group(function () {
