@@ -15,12 +15,7 @@ class CommunityRepository
     {
         return Community::findOrFail($id);
     }
-
-    public function create(array $data)
-    {
-        return Community::create($data);
-    }
-
+    
     public function update($id, array $data)
     {
         $community = $this->findById($id);
@@ -33,5 +28,16 @@ class CommunityRepository
         $community = $this->findById($id);
         $community->delete();
         return true;
+    }
+
+    public function getBySubCategoryId($subCategoryId, $perPage = 15, $page)
+    {
+        return Community::where('sub_categories_id', $subCategoryId)
+            ->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    public function create(array $data)
+    {
+        return Community::create($data);
     }
 }

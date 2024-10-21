@@ -12,13 +12,15 @@ class Community extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'parent_id'];
+    protected $fillable = ['name', 'sub_categories_id', 'status', 'description'];
 
-    public function parentCategory()
+    // 關聯至 SubCategory
+    public function subCategory()
     {
-        return $this->belongsTo(Category::class, 'parent_id');
+        return $this->belongsTo(SubCategory::class);
     }
 
+    // Community 與 Topic 的關聯
     public function topics()
     {
         return $this->hasMany(Topic::class);

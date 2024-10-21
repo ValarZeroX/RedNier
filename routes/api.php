@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\User\UserSettingController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\CommunityController;
 
 // 公開路由
 Route::post('/register', [AuthController::class, 'register'])->middleware('locale');
@@ -19,13 +20,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 //分類選單
 Route::get('/categories', [CategoryController::class, 'index']);
-
+Route::get('/communities/sub-category/{subCategoryId}/page/{page}', [CommunityController::class, 'getBySubCategory']);
 
 // 受保護路由
 Route::middleware('auth:sanctum', 'verified', 'locale')->group(function () {
     Route::get('/user', [UserController::class, 'getAuthenticatedUser']);
     Route::get('/user/auth-methods', [AuthController::class, 'getUserAuthMethods']);
     Route::post('/user/settings', [UserSettingController::class, 'updateUserSettings']);
+
+    // 建立社群
+    Route::post('/communities', [CommunityController::class, 'create']);
     // 其他需要認證的路由...
 
     // // 重新發送驗證郵件
