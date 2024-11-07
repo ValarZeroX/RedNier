@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\User\UserSettingController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\Forum\TopicsController;
 
 // 公開路由
 Route::post('/register', [AuthController::class, 'register'])->middleware('locale');
@@ -21,6 +22,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 //分類選單
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/communities/sub-category/{subCategoryId}/page/{page}', [CommunityController::class, 'getBySubCategory']);
+
+// 公開的主題路由
+Route::get('/topics', [TopicsController::class, 'index']);
+Route::get('/topics/{id}', [TopicsController::class, 'show']);
+
+// 新增的社群詳細資料路由
+Route::get('/communities/{id}', [CommunityController::class, 'show']);
 
 // 受保護路由
 Route::middleware('auth:sanctum', 'verified', 'locale')->group(function () {

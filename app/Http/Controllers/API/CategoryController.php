@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use App\Services\CategoryService;
+use Illuminate\Support\Facades\Redis;
 
 class CategoryController extends Controller
 {
@@ -19,18 +20,33 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::with('subCategories')->get()->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-                'subCategories' => $category->subCategories->map(function ($subCategory) {
-                    return [
-                        'id' => $subCategory->id,
-                        'name' => $subCategory->name
-                    ];
-                })
-            ];
-        });
+        // 嘗試從 Redis 獲取資料
+        $categories = Redis::get('categories');
+
+        if (!$categories) {
+            // 如果 Redis 中沒有，從資料庫查詢
+            $categoriesData = Category::with('subCategories')->get()->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'subCategories' => $category->subCategories->map(function ($subCategory) {
+                        return [
+                            'id' => $subCategory->id,
+                            'name' => $subCategory->name
+                        ];
+                    })
+                ];
+            });
+
+            // 將資料轉為 JSON 字串並存入 Redis（設定過期時間為一小時）
+            $categoriesJson = $categoriesData->toJson();
+            Redis::setex('categories', 3600, $categoriesJson);
+
+            $categories = $categoriesJson;
+        }
+
+        // 將 JSON 字串轉回陣列
+        $categories = json_decode($categories, true);
 
         return response()->json($categories);
     }

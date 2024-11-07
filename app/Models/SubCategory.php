@@ -22,5 +22,18 @@ class SubCategory extends Model
         return $this->belongsTo(Category::class);
     }
 
-    // 其他模型方法可以根據需求添加，例如 Scope 查詢等
+    protected static function booted()
+    {
+        static::created(function ($subCategory) {
+            Redis::del('categories');
+        });
+
+        static::updated(function ($subCategory) {
+            Redis::del('categories');
+        });
+
+        static::deleted(function ($subCategory) {
+            Redis::del('categories');
+        });
+    }
 }

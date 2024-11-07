@@ -20,6 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #  && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #  && docker-php-ext-install pdo_odbc
 
+# 安裝 Redis PHP 擴展
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 # 清理安裝過程中的緩存
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

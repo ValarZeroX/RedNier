@@ -24,6 +24,8 @@ class CommunityController extends Controller
         return response()->json($communities);
     }
 
+    
+
     public function create(Request $request)
     {
         Log::info('Received data:', $request->all());
@@ -40,5 +42,22 @@ class CommunityController extends Controller
         $community = $this->communityRepository->create($request->all());
 
         return response()->json($community, 201);
+    }
+
+    /**
+     * 根據社群 ID 撈取特定社群資料
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $community = $this->communityRepository->getById($id);
+
+        if (!$community) {
+            return response()->json(['message' => '社群未找到'], 404);
+        }
+
+        return response()->json($community);
     }
 }
